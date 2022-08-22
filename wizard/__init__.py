@@ -1,1 +1,1 @@
-#from . import keycloak_sync_wiz
+from . import keycloak_sync_wiz
