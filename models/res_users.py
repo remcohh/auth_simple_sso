@@ -19,14 +19,14 @@ class ResUsers(models.Model):
     def _keycloak_validate(self, provider, access_token):
         """Validate token against Keycloak."""
         logger.debug('Calling: %s' % provider.validation_endpoint)
-        resp = requests.post(
-            provider.validation_endpoint,
-            data={'token': access_token},
-            auth=(provider.client_id, provider.client_secret)
+        headers = { "apiKey": "86ad4c77-3db3-4f37-861b-7e6ac178b98c" }
+        resp = requests.get(
+            provider.validation_endpoint + "/" + access_token,
+            headers=headers
         )
         if not resp.ok:
             raise OAuthError(resp.reason)
-        validation = resp.json()
+        validation = resp.json()['ADFS']
         if validation.get("error"):
             raise OAuthError(validation)
         logger.debug('Validation: %s' % str(validation))
@@ -43,8 +43,56 @@ class ResUsers(models.Model):
         oauth_provider = self.env['auth.oauth.provider'].browse(provider)
         validation = self._keycloak_validate(oauth_provider, access_token)
         # clone keycloak ID expected by odoo into `user_id`
-        validation['user_id'] = validation['sub']
+        validation['user_id'] = validation['EmailAddress'] # validation['sub']
         return validation
+    
+    @api.model
+    def _auth_oauth_signin(self, provider, validation, params):
+        """ retrieve and sign in the user corresponding to provider and validated access token
+            :param provider: oauth provider id (int)
+            :param validation: result of validation of access token (dict)
+            :param params: oauth parameters (dict)
+            :return: user login (str)
+            :raise: AccessDenied if signin failed
+
+            This method can be overridden to add alternative signin methods.
+        """
+        oauth_uid = validation['user_id']
+        try:
+            oauth_user = self.search([("login", "=", oauth_uid), ('oauth_provider_id', '=', provider)])
+            if not oauth_user:
+                raise AccessDenied()
+            assert len(oauth_user) == 1
+            oauth_user.write({'oauth_access_token': params['SSSOId']})
+            return oauth_user.login
+        except AccessDenied as access_denied_exception:
+            if self.env.context.get('no_user_creation'):
+                return None
+            state = json.loads(params['state'])
+            token = state.get('t')
+            values = self._generate_signup_values(provider, validation, params)
+            try:
+                login, _ = self.signup(values, token)
+                return login
+            except (SignupError, UserError):
+                raise access_denied_exception    
+    
+    @api.model
+    def auth_oauth(self, provider, params):
+        # Advice by Google (to avoid Confused Deputy Problem)
+        # if validation.audience != OUR_CLIENT_ID:
+        #   abort()
+        # else:
+        #   continue with the process
+        access_token = params.get('SSSOId')
+        validation = self._auth_oauth_validate(provider, access_token)
+
+        # retrieve and sign in user
+        login = self._auth_oauth_signin(provider, validation, params)
+        if not login:
+            raise AccessDenied()
+        # return user credentials
+        return (self.env.cr.dbname, login, access_token)    
 
     def button_push_to_keycloak(self):
         """Quick action to push current users to Keycloak."""
