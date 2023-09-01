@@ -17,7 +17,7 @@ class ResUsers(models.Model):
     _inherit = 'res.users'
 
     def _keycloak_validate(self, provider, access_token):
-        """Validate token against Keycloak."""
+        """Validate token against simplesso."""
         logger.debug('Calling: %s' % provider.validation_endpoint)
         headers = { "apiKey": "86ad4c77-3db3-4f37-861b-7e6ac178b98c" }
         resp = requests.get(

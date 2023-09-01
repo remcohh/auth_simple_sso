@@ -17,10 +17,10 @@ class OAuthLoginKeyCloak(OAuthLogin):
         for provider in providers:
             return_url = request.httprequest.url_root + 'auth_oauth/signin'
             state = self.get_state(provider)
-            if provider['name'] == 'Keycloak':
+            if provider['name'] == 'simpleSSO':
                 params_casdoor = dict(
                     apiKey='86ad4c77-3db3-4f37-861b-7e6ac178b98c',
-                    ReturnUrl=return_url + "?state={\"d\":\"demo\", \"p\":9}",
+                    ReturnUrl=return_url + "?state={\"d\":\"demo\", \"p\":%s}"%(provider['id']), #TODO refactor
                     response_type='code',
                     client_id=provider['client_id'],
                     redirect_uri=return_url,
