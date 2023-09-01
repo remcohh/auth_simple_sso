@@ -20,7 +20,7 @@ class OAuthLoginKeyCloak(OAuthLogin):
             if provider['name'] == 'simpleSSO':
                 params_casdoor = dict(
                     apiKey='86ad4c77-3db3-4f37-861b-7e6ac178b98c',
-                    ReturnUrl=return_url + "?state={\"d\":\"demo\", \"p\":%s}"%(provider['id']), #TODO refactor
+                    ReturnUrl=return_url + "?state=" + json.dumps(self.get_state(provider)), 
                     response_type='code',
                     client_id=provider['client_id'],
                     redirect_uri=return_url,
