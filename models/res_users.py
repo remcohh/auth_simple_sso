@@ -94,21 +94,21 @@ class ResUsers(models.Model):
         # return user credentials
         return (self.env.cr.dbname, login, access_token)    
 
-    def button_push_to_keycloak(self):
-        """Quick action to push current users to Keycloak."""
-        provider = self.env.ref(
-            'auth_keycloak.default_keycloak_provider',
-            raise_if_not_found=False
-        )
-        enabled = provider and provider.users_management_enabled
-        if not enabled:
-            raise exceptions.UserError(
-                _('Keycloak provider not found or not configured properly.')
-            )
-        wiz = self.env['auth.keycloak.create.wiz'].create({
-            'provider_id': provider.id,
-            'user_ids': [(6, 0, self.ids)],
-        })
-        action = self.env.ref('auth_keycloak.keycloak_create_users').read()[0]
-        action['res_id'] = wiz.id
-        return action
+    # def button_push_to_keycloak(self):
+    #     """Quick action to push current users to Keycloak."""
+    #     provider = self.env.ref(
+    #         'auth_keycloak.default_keycloak_provider',
+    #         raise_if_not_found=False
+    #     )
+    #     enabled = provider and provider.users_management_enabled
+    #     if not enabled:
+    #         raise exceptions.UserError(
+    #             _('Keycloak provider not found or not configured properly.')
+    #         )
+    #     wiz = self.env['auth.keycloak.create.wiz'].create({
+    #         'provider_id': provider.id,
+    #         'user_ids': [(6, 0, self.ids)],
+    #     })
+    #     action = self.env.ref('auth_keycloak.keycloak_create_users').read()[0]
+    #     action['res_id'] = wiz.id
+    #     return action

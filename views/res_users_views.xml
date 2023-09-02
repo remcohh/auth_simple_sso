@@ -8,14 +8,6 @@
     <field name="arch" type="xml">
       <header position="inside">
         <field name="oauth_uid" invisible="1" readonly="1" />
-        <button
-          string="Push to Keycloak"
-          type="object"
-          name="button_push_to_keycloak"
-          class="btn btn-primary"
-          help="Create this user on Keycloak too."
-          attrs="{'invisible': [('oauth_uid', '=', True)]}"
-          />
       </header>
     </field>
   </record>

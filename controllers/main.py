@@ -21,11 +21,6 @@ class OAuthLoginKeyCloak(OAuthLogin):
                 params_casdoor = dict(
                     apiKey='86ad4c77-3db3-4f37-861b-7e6ac178b98c',
                     ReturnUrl=return_url + "?state=" + json.dumps(self.get_state(provider)), 
-                    response_type='code',
-                    client_id=provider['client_id'],
-                    redirect_uri=return_url,
-                    scope=provider['scope'],
-                    state=json.dumps(state),                    
                 )
                 provider['auth_link'] = "%s?%s" % (provider['auth_endpoint'], werkzeug.urls.url_encode(params_casdoor))
 

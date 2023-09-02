@@ -14,8 +14,6 @@
     ],
     "data": [
         'data/auth_oauth_provider.xml',
-        'wizard/keycloak_sync_wiz.xml',
-        'wizard/keycloak_create_wiz.xml',
         'views/auth_oauth_views.xml',
         'views/res_users_views.xml',
     ],
