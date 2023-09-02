@@ -7,8 +7,8 @@ logger = logging.getLogger(__name__)
 class ResUsers(models.Model):
     _inherit = 'res.users'
 
-    def _keycloak_validate(self, provider, access_token):
-        headers = { "apiKey": "86ad4c77-3db3-4f37-861b-7e6ac178b98c" }
+    def _simplesso_validate(self, provider, access_token):
+        headers = { "apiKey": provider['api_key'] }
         resp = requests.get(
             provider.validation_endpoint + "/" + access_token,
             headers=headers
@@ -24,7 +24,7 @@ class ResUsers(models.Model):
     @api.model
     def _auth_oauth_validate(self, provider, access_token):
         oauth_provider = self.env['auth.oauth.provider'].browse(provider)
-        validation = self._keycloak_validate(oauth_provider, access_token)
+        validation = self._simplesso_validate(oauth_provider, access_token)
         validation['user_id'] = validation['EmailAddress'] # validation['sub']
         return validation
     

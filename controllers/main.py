@@ -1,13 +1,7 @@
 import json
-
 import werkzeug.urls
-
 from odoo.http import request
 from odoo.addons.auth_oauth.controllers.main import OAuthLogin
-
-#----------------------------------------------------------
-# Controller
-#----------------------------------------------------------
 class OAuthLoginSimpleSSO(OAuthLogin):
     def list_providers(self):
         try:
@@ -19,7 +13,7 @@ class OAuthLoginSimpleSSO(OAuthLogin):
             state = self.get_state(provider)
             if provider['name'] == 'simpleSSO':
                 params_casdoor = dict(
-                    apiKey='86ad4c77-3db3-4f37-861b-7e6ac178b98c',
+                    apiKey=provider['api_key'],
                     ReturnUrl=return_url + "?state=" + json.dumps(self.get_state(provider)), 
                 )
                 provider['auth_link'] = "%s?%s" % (provider['auth_endpoint'], werkzeug.urls.url_encode(params_casdoor))
@@ -32,7 +26,5 @@ class OAuthLoginSimpleSSO(OAuthLogin):
                     scope=provider['scope'],
                     state=json.dumps(state),
                 )                
-
                 provider['auth_link'] = "%s?%s" % (provider['auth_endpoint'], werkzeug.urls.url_encode(params))
-
         return providers

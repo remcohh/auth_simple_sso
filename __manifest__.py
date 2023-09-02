@@ -1,5 +1,5 @@
 {
-    "name": "simpleSSO auth integration",
+    "name": "simpleSSO authentication",
     "summary": "Integrate simpleSSO into your SSO",
     "version": "0.1",
     'category': 'Tools',

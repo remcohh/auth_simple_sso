@@ -3,7 +3,7 @@
   <record id="default_simplesso_provider" model="auth.oauth.provider">
     <field name="name">simpleSSO</field>
     <field name="enabled" eval="0" />
-    <field name="client_id">odoo</field>
+    <field name="api_key">86ad4c77-3db3-4f37-861b-7e6ac178b98c</field>
     <field name="auth_endpoint">https://simplesso.maastrichtuniversity.nl/IdentityProviderSelection</field>
     <field name="validation_endpoint">https://simplesso.maastrichtuniversity.nl/api/Identity</field>
     <field name="data_endpoint"></field>
