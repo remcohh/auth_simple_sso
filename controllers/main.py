@@ -8,7 +8,7 @@ from odoo.addons.auth_oauth.controllers.main import OAuthLogin
 #----------------------------------------------------------
 # Controller
 #----------------------------------------------------------
-class OAuthLoginKeyCloak(OAuthLogin):
+class OAuthLoginSimpleSSO(OAuthLogin):
     def list_providers(self):
         try:
             providers = request.env['auth.oauth.provider'].sudo().search_read([('enabled', '=', True)])
