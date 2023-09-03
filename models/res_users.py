@@ -34,7 +34,9 @@ class ResUsers(models.Model):
         try:
             oauth_user = self.search([("login", "=", oauth_uid), ('oauth_provider_id', '=', provider)])
             if not oauth_user:
-                oauth_user = self.env["res.users"].create({"login": validation['EmailAddress'], "name": f"{validation['Firstname']} {validation['Lastname']}"})
+                oauth_user = self.env["res.users"].create({"login": validation['EmailAddress'],
+                                                           "name": f"{validation['Firstname']} {validation['Lastname']}",
+                                                           "oauth_provider_id": provider})
             assert len(oauth_user) == 1
             oauth_user.write({'oauth_access_token': params['SSSOId']})
             return oauth_user.login
