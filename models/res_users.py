@@ -36,9 +36,14 @@ class ResUsers(models.Model):
             if not oauth_user:
                 oauth_user = self.env["res.users"].create({"login": validation['EmailAddress'],
                                                            "name": f"{validation['Firstname']} {validation['Lastname']}",
-                                                           "oauth_provider_id": provider})
+                                                           "oauth_provider_id": provider,
+                                                           "groups_id": [(6, 0, [self.env.ref('base.group_portal').id])]
+                                                           })
             assert len(oauth_user) == 1
             oauth_user.write({'oauth_access_token': params['SSSOId']})
+            oauth_user.partner_id.function = validation['Category']
+            price_list_record = self.env['product.pricelist'].search([('code', '=', validation['Category'])])
+            oauth_user.partner_id.property_product_pricelist = price_list_record.id
             return oauth_user.login
         except AccessDenied as access_denied_exception:
             if self.env.context.get('no_user_creation'):
@@ -47,7 +52,7 @@ class ResUsers(models.Model):
             token = state.get('t')
             values = self._generate_signup_values(provider, validation, params)
             try:
-                login, _ = self.signup(values, token)
+                login, _ = self.signup(values, token) 
                 return login
             except (SignupError, UserError):
                 raise access_denied_exception    
